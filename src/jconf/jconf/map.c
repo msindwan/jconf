@@ -33,7 +33,7 @@ static unsigned int jconf_hash(const char* key)
     hash += (hash << 15);
 
     // Return a number from 0 to JCONF_BUCKET_SIZE.
-    return abs(hash % JCONF_BUCKET_SIZE);
+    return hash % JCONF_BUCKET_SIZE;
 }
 
 /**
@@ -103,10 +103,10 @@ void* jconf_map_set(jMap* map, const char* key, void* value)
     if (*head == NULL)
     {
         // Create a new list.
-        *head = malloc(sizeof(*node));
+        *head = (jNode*)malloc(sizeof(*node));
         (*head)->key = key;
         (*head)->value = value;
-        (*head)->next = 0;
+        (*head)->next = NULL;
     }
     else
     {
@@ -124,8 +124,9 @@ void* jconf_map_set(jMap* map, const char* key, void* value)
         }
 
         // Append a new node once we've reached the end.
-        node = malloc(sizeof(*node));
-        node->key = value;
+        node = (jNode*)malloc(sizeof(*node));
+        node->key = key;
+        node->value = value;
         node->next = NULL;
         temp->next = node;
     }

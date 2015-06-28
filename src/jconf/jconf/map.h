@@ -39,7 +39,4 @@ void*  jconf_map_set(jMap*, const char*, void*);
 void*  jconf_map_get(jMap*, const char*);
 jNode* jconf_map_delete(jMap*, const char*);
 
-// Static helper functions.
-static unsigned int jconf_hash(const char*);
-
 #endif

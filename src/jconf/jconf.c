@@ -17,9 +17,9 @@
  * @param[in]  {i}      // The starting character index.
  * @returns             // The error code.
  */
-static J_ERROR_CODE jconf_scan_string(const char* buffer, size_t size, unsigned int* i)
+static J_ERROR_CODE jconf_scan_string(const char* buffer, int size, int* i)
 {
-    unsigned int length, j, k;
+    int length, j, k;
     char c;
     
     j = *i;
@@ -76,7 +76,7 @@ static J_ERROR_CODE jconf_scan_string(const char* buffer, size_t size, unsigned 
  * @param[in]  {err}    // The object to store error related information
  * @returns             // The resulting token.
  */
-static jToken* jconf_parse_value(const char* buffer, size_t size, unsigned int* i, int* err)
+static jToken* jconf_parse_value(const char* buffer, int size, int* i, int* err)
 {
     unsigned int j;
     jToken* token;
@@ -89,7 +89,7 @@ static jToken* jconf_parse_value(const char* buffer, size_t size, unsigned int* 
     while (++(*i) + 1 < size && (c = buffer[*i + 1]) != ',' && c != '}' && c != ']' && !jconf_isspace(c));
 
     c = buffer[j];
-    token = malloc(sizeof(*token));
+    token = (jToken*)malloc(sizeof(*token));
     length = *i - j + 1;
     buffer += j;
     
@@ -111,7 +111,7 @@ static jToken* jconf_parse_value(const char* buffer, size_t size, unsigned int* 
     }
     else
     {
-        number = malloc(sizeof(float));
+        number = (float*)malloc(sizeof(float));
         *number = strtof(buffer, &fEnd);
 
         if (buffer + length != fEnd)
@@ -143,14 +143,13 @@ static jToken* jconf_parse_value(const char* buffer, size_t size, unsigned int* 
  * @param[in]  {err}    // The object to store error related information
  * @returns             // The state of the DFA.
  */
-static int jconf_parse_json(jToken* tokens, const char* buffer, size_t size, unsigned int* i, jError* err)
+static int jconf_parse_json(jToken* tokens, const char* buffer, size_t size, int* i, jError* err)
 {
     // Local variables.
-    enum _JCONF_PARSE_STATE state;
     unsigned int j, line, length;
+    int errnum, state;
     jToken* token;
     jArray* arr;
-    int errnum;
     jMap* map;
     char* key;
     char c;
@@ -203,7 +202,7 @@ static int jconf_parse_json(jToken* tokens, const char* buffer, size_t size, uns
                     state = JCONF_OBJECT_KEY;
                     tokens->type = JCONF_OBJECT;
                     tokens->data = malloc(sizeof(*map));
-                    jconf_init_map(tokens->data);
+                    jconf_init_map((jMap*)tokens->data);
                 }
                 else if (c == '[')
                 {
@@ -211,7 +210,7 @@ static int jconf_parse_json(jToken* tokens, const char* buffer, size_t size, uns
                     state = JCONF_ARRAY_VALUE;
                     tokens->type = JCONF_ARRAY;
                     tokens->data = malloc(sizeof(*arr));
-                    jconf_init_array(tokens->data, 1, 2);
+                    jconf_init_array((jArray*)tokens->data, 1, 2);
                 }
                 else
                 {
@@ -271,7 +270,7 @@ static int jconf_parse_json(jToken* tokens, const char* buffer, size_t size, uns
 
                     // Insert the string into the JSON object.
                     length = *i - j;
-                    token = malloc(sizeof(*token));
+                    token = (jToken*)malloc(sizeof(*token));
                     token->type = JCONF_STRING;
                     token->data = malloc(sizeof(length + 1));
 
@@ -325,7 +324,7 @@ static int jconf_parse_json(jToken* tokens, const char* buffer, size_t size, uns
                         goto parse_error;
                 }
 
-                jconf_array_push(tokens->data, token);
+                jconf_array_push((jArray*)tokens->data, token);
                 state = JCONF_ARRAY_NEXT;
                 break;
             case JCONF_ARRAY_NEXT:
@@ -347,7 +346,7 @@ static int jconf_parse_json(jToken* tokens, const char* buffer, size_t size, uns
 
 // Error handling.
 parse_error:
-    err->e = errnum;
+    err->e = (J_ERROR_CODE)errnum;
     err->line = line;
     err->pos = *i;
     err->length = length;
@@ -374,7 +373,7 @@ jToken* json2c(const char* buffer, size_t size, jError* err)
     int i;
 
     // Create a new collection.
-    collection = malloc(sizeof(*collection));
+    collection = (jToken*)malloc(sizeof(*collection));
     i = 0;
 
     // Attempt to parse the buffer. If it fails, the error struct will be filled

@@ -22,7 +22,7 @@ void jconf_init_array(jArray* arr, int size, int expand)
     arr->end = 0;
     arr->size = size;
     arr->expand = expand;
-    arr->values = malloc(size*sizeof(void**));
+    arr->values = (void**)malloc(size*sizeof(void*));
 
     for (i = 0; i < size; i++)
         arr->values[i] = NULL;
@@ -54,7 +54,7 @@ int jconf_array_push(jArray* arr, void* value)
     if (arr->end + 1 > arr->size)
     {
         arr->size *= arr->expand;
-        arr->values = realloc(arr->values, arr->size);
+        arr->values = (void**)realloc(arr->values, arr->size);
         for (i = arr->end + 1; i < arr->size; i++)
             arr->values[i] = NULL;
     }
@@ -81,7 +81,7 @@ int jconf_array_set(jArray* arr, int index, void* value)
     if (index >= arr->size)
     {
         arr->size = index*arr->expand;
-        arr->values = realloc(arr->values, arr->size);
+        arr->values = (void**)realloc(arr->values, arr->size);
         for (i = arr->end + 1; i < arr->size; i++)
             arr->values[i] = NULL;
     }

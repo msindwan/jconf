@@ -77,11 +77,6 @@ typedef struct _j_error
 
 } jError;
 
-// Static helper functions.
-static J_ERROR_CODE jconf_scan_string(const char*, size_t, unsigned int*);
-static jToken* jconf_parse_value(const char*, size_t, unsigned int*, int*);
-static int jconf_parse_json(jToken*, const char*, size_t, unsigned int* i, jError*);
-
 // JConf API.
 jToken* json2c(const char*, size_t, jError*);
 const char* c2json(jToken*);
