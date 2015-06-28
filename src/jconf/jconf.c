@@ -76,7 +76,7 @@ static J_ERROR_CODE jconf_scan_string(const char* buffer, size_t size, unsigned 
  * @param[in]  {err}    // The object to store error related information
  * @returns             // The resulting token.
  */
-static jToken* jconf_parse_value(const char* buffer, size_t size, unsigned int* i, J_ERROR_CODE* err)
+static jToken* jconf_parse_value(const char* buffer, size_t size, unsigned int* i, int* err)
 {
     unsigned int j;
     jToken* token;
@@ -148,9 +148,9 @@ static int jconf_parse_json(jToken* tokens, const char* buffer, size_t size, uns
     // Local variables.
     enum _JCONF_PARSE_STATE state;
     unsigned int j, line, length;
-    enum J_ERROR_CODE errnum;
     jToken* token;
     jArray* arr;
+    int errnum;
     jMap* map;
     char* key;
     char c;

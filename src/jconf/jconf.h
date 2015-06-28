@@ -19,7 +19,7 @@
 #define jconf_isspace(c) (c>=0x09 && c<=0x0D) || (c==0x20) ? 1 : 0
 
 // JSON parse state.
-static enum _JCONF_PARSE_STATE
+enum _JCONF_PARSE_STATE
 {
     JCONF_START_STATE = 0,
     JCONF_OBJECT_KEY,
@@ -79,7 +79,7 @@ typedef struct _j_error
 
 // Static helper functions.
 static J_ERROR_CODE jconf_scan_string(const char*, size_t, unsigned int*);
-static jToken* jconf_parse_value(const char*, size_t, unsigned int*, J_ERROR_CODE*);
+static jToken* jconf_parse_value(const char*, size_t, unsigned int*, int*);
 static int jconf_parse_json(jToken*, const char*, size_t, unsigned int* i, jError*);
 
 // JConf API.

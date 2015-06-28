@@ -44,10 +44,11 @@ static unsigned int jconf_hash(const char* key)
  */
 void jconf_init_map(jMap* map)
 {
+    int i;
     map->count = 0;
 
     // Zero initialize the map buckets.
-    for (int i = 0; i < JCONF_BUCKET_SIZE; i++)
+    for (i = 0; i < JCONF_BUCKET_SIZE; i++)
         map->buckets[i] = NULL;
 }
 
@@ -60,7 +61,9 @@ void jconf_init_map(jMap* map)
 void jconf_destroy_map(jMap* map)
 {
     jNode *entry, *temp;
-    for (int i = 0; i < JCONF_BUCKET_SIZE; i++)
+    int i;
+
+    for (i = 0; i < JCONF_BUCKET_SIZE; i++)
     {
         if ((entry = map->buckets[i]) != NULL)
         {
