@@ -9,8 +9,8 @@
 #ifndef __JCONF_SERIALIZER_H__
 #define __JCONF_SERIALIZER_H__
 
-#include "jconf\map.h"
-#include "jconf\array.h"
+#include "jconf\collections\map.h"
+#include "jconf\collections\array.h"
 
 // Ctype macros.
 #define jconf_isctrl(c)  (c == 'n' || c == '\\') ? 1 : 0

@@ -8,7 +8,7 @@ CCFLAGS = -shared -o
 AR = ar
 ARCMD = rcs
 
-OBJECTS = jconf.o jconf/array.o jconf/map.o jconf/string.o
+OBJECTS = jconf.o jconf/collections/array.o jconf/collections/map.o jconf/utility/string.o
 LIB_STATIC = libjconf.a
 LIB_SHARED = libjconf.so
 

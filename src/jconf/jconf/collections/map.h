@@ -11,7 +11,7 @@
 
 #include <stdlib.h>  // For standard macros and dynamic memory allocation.
 #include "string.h"  // For safe string functions.
-
+ 
 #define JCONF_BUCKET_SIZE 100
 
 // Struct definition for linked list nodes.
