@@ -9,8 +9,8 @@
 #ifndef __HASH_MAP_JCONF_H__
 #define __HASH_MAP_JCONF_H__
 
-#include <stdlib.h>  // For standard macros and dynamic memory allocation.
-#include "string.h"  // For safe string functions.
+#include "../utility/string.h"  // For safe string functions.
+#include <stdlib.h>             // For standard macros and dynamic memory allocation.
  
 #define JCONF_BUCKET_SIZE 100
 

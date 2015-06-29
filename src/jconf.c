@@ -143,7 +143,7 @@ static jToken* jconf_parse_value(const char* buffer, int size, int* i, int* err)
  * @param[in]  {err}    // The object to store error related information
  * @returns             // The state of the DFA.
  */
-static int jconf_parse_json(jToken* tokens, const char* buffer, size_t size, int* i, jError* err)
+static int jconf_parse_json(jToken* tokens, const char* buffer, int size, int* i, jError* err)
 {
     // Local variables.
     unsigned int j, line, length;
@@ -157,6 +157,7 @@ static int jconf_parse_json(jToken* tokens, const char* buffer, size_t size, int
     // Initialize line and state.
     state = JCONF_START_STATE;
     length = 0;
+    errnum = 0;
     line = 1;
     
     for (; *i < size; (*i)++)
