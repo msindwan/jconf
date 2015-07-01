@@ -54,7 +54,7 @@ int jconf_array_push(jArray* arr, void* value)
     if (arr->end + 1 > arr->size)
     {
         arr->size *= arr->expand;
-        arr->values = (void**)realloc(arr->values, arr->size);
+        arr->values = (void**)realloc(arr->values, arr->size*sizeof(void*));
         for (i = arr->end + 1; i < arr->size; i++)
             arr->values[i] = NULL;
     }

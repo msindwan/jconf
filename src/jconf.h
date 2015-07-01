@@ -9,23 +9,24 @@
 #ifndef __JCONF_SERIALIZER_H__
 #define __JCONF_SERIALIZER_H__
 
-#include "jconf\collections\map.h"
 #include "jconf\collections\array.h"
+#include "jconf\collections\map.h"
 
 // Ctype macros.
-#define jconf_isctrl(c)  (c == 'n' || c == '\\') ? 1 : 0
-#define jconf_isdigit(c) ((c>= '0') && (c <= '9')) ? 1 : 0
-#define jconf_isxdigit(c) jconf_isdigit(c) || ((c >= 'A') && (c <= 'F')) || ((c >= 'a') && (c <= 'f')) ? 1 : 0
+#define jconf_isctrl(c)  (c == 'n') || (c == '\\') || (c == '/') || (c == 'b') || (c == 'f') || (c == 'r') || (c == 't') || (c == 'u') ? 1 : 0
+#define jconf_isxdigit(c) ((c>= '0') && (c <= '9')) || ((c >= 'A') && (c <= 'F')) || ((c >= 'a') && (c <= 'f')) ? 1 : 0
 #define jconf_isspace(c) (c>=0x09 && c<=0x0D) || (c==0x20) ? 1 : 0
 
 // JSON parse state.
-enum _JCONF_PARSE_STATE
+enum __JCONF_PARSE_STATE
 {
     JCONF_START_STATE = 0,
+    JCONF_OBJECT_INIT,
     JCONF_OBJECT_KEY,
     JCONF_OBJECT_COLON,
     JCONF_OBJECT_VALUE,
     JCONF_OBJECT_NEXT,
+    JCONF_ARRAY_INIT,
     JCONF_ARRAY_VALUE,
     JCONF_ARRAY_NEXT,
     JCONF_END_STATE,
@@ -78,7 +79,7 @@ typedef struct _j_error
 } jError;
 
 // JConf API.
-jToken* json2c(const char*, size_t, jError*);
-const char* c2json(jToken*);
+jToken* jconf_json2c(const char*, size_t, jError*);
+void jconf_free_token(jToken*);
 
 #endif
