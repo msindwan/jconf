@@ -20,7 +20,7 @@ typedef struct _j_array
 } jArray;
 
 // jArray API.
-void  jconf_init_array(jArray*, int, int);
+int   jconf_init_array(jArray*, int, int);
 void  jconf_destroy_array(jArray*);
 
 int   jconf_array_push(jArray*, void*);

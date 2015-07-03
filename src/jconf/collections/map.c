@@ -76,7 +76,7 @@ void jconf_destroy_map(jMap* map)
             }
         }
     }
-    
+
     // Free the map instance.
     free(map);
 }
@@ -87,14 +87,14 @@ void jconf_destroy_map(jMap* map)
  * Description: Add an entry to the map with the associated key.
  * @param[in]  {map}   // The map to append the entry to.
  * @param[out] {key}   // The associated key.
- * @param[out] {value} // THe value to store.
- * @returns            // The previous value (NULL if the key is new).
+ * @param[out] {value} // The value to store.
+ * @param[in]  {prev}  // A pointer to a void pointer for the previous value.
+ * @returns            // '1' if successful, '0' if out of memory.
  */
-void* jconf_map_set(jMap* map, const char* key, void* value)
+int jconf_map_set(jMap* map, const char* key, void* value, void** prev)
 {
     jNode **head, *node, *temp;
     unsigned int index;
-    void* prev;
 
     index = jconf_hash(key);
     head = &map->buckets[index];
@@ -104,6 +104,9 @@ void* jconf_map_set(jMap* map, const char* key, void* value)
     {
         // Create a new list.
         *head = (jNode*)malloc(sizeof(*node));
+        if (*head == NULL)
+            return 0;
+
         (*head)->key = key;
         (*head)->value = value;
         (*head)->next = NULL;
@@ -116,15 +119,21 @@ void* jconf_map_set(jMap* map, const char* key, void* value)
             // If the node exists, set the new value and return the old one.
             if (jconf_strcmp(temp->key, key) == 0)
             {
-                prev = temp->value;
-                temp->value = value;
-                return prev;
+                if (*prev != NULL)
+                {
+                    *prev = temp->value;
+                    temp->value = value;
+                }
+                return 1;
             }
             temp = temp->next;
         }
 
         // Append a new node once we've reached the end.
         node = (jNode*)malloc(sizeof(*node));
+        if (node == NULL)
+            return 0;
+
         node->key = key;
         node->value = value;
         node->next = NULL;
@@ -132,7 +141,8 @@ void* jconf_map_set(jMap* map, const char* key, void* value)
     }
 
     map->count++;
-    return NULL;
+    *prev = NULL;
+    return 1;
 }
 
 /**
@@ -150,7 +160,7 @@ void* jconf_map_get(jMap* map, const char* key)
 
     index = jconf_hash(key);
     entry = map->buckets[index];
-    
+
     // Search the linked list.
     while (entry)
     {

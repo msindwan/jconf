@@ -14,8 +14,9 @@
  * @param[in]  {arr}    // A pointer to the array to initialize.
  * @param[out] {size}   // The initial size of the array.
  * @param[out] {expand} // The expand rate.
+ * @returns // '1' if successful, '0' if out of memory.
  */
-void jconf_init_array(jArray* arr, int size, int expand)
+int jconf_init_array(jArray* arr, int size, int expand)
 {
     int i;
 
@@ -24,8 +25,13 @@ void jconf_init_array(jArray* arr, int size, int expand)
     arr->expand = expand;
     arr->values = (void**)malloc(size*sizeof(void*));
 
+    if (arr->values == NULL)
+        return 0;
+
     for (i = 0; i < size; i++)
         arr->values[i] = NULL;
+
+    return 1;
 }
 
 /**
@@ -106,7 +112,7 @@ void* jconf_array_get(jArray* arr, int index)
 {
     if (index >= arr->size)
         return NULL;
-    
+
     // Return the element.
     return arr->values[index];
 }
