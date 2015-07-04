@@ -2,23 +2,15 @@
 # Author : Mayank Sindwani
 # Date : 2015-06-27
 
-CC = gcc
-CCFLAGS = -shared -o
-
 AR = ar
 ARCMD = rcs
 
 OBJECTS = jconf.o collections/array.o collections/map.o collections/string.o
 LIB_STATIC = libjconf.a
-LIB_SHARED = libjconf.so
 
 # Make static library
-static : $(OBJECTS)
+target : $(OBJECTS)
 	$(AR) $(ARCMD) $(LIB_STATIC) $(OBJECTS)
-
-# Make shared library
-shared : $(OBJECTS)
-	$(CC) $(CCFLAGS) $(LIB_SHARED) $(OBJECTS)
 
 # Clean
 clean :
