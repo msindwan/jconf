@@ -8,7 +8,7 @@ CCFLAGS = -shared -o
 AR = ar
 ARCMD = rcs
 
-OBJECTS = jconf.o jconf/collections/array.o jconf/collections/map.o jconf/utility/string.o
+OBJECTS = jconf.o jconf/collections/array.o jconf/collections/map.o jconf/collections/string.o
 LIB_STATIC = libjconf.a
 LIB_SHARED = libjconf.so
 
@@ -18,7 +18,7 @@ static : $(OBJECTS)
 
 # Make shared library
 shared : $(OBJECTS)
-	$(CC) $(CCFLAGS) $(LIB_SHARED) $(OBJECTS) 
+	$(CC) $(CCFLAGS) $(LIB_SHARED) $(OBJECTS)
 
 # Clean
 clean :
