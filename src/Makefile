@@ -11,8 +11,6 @@ ARCMD = rcs
 OBJECTS = jconf.o collections/array.o collections/map.o collections/string.o
 LIB_STATIC = libjconf.a
 
-debug: CFLAGS += -g
-
 # Build object files
 %.o: %.c
 	$(CC) $(CFLAGS) $@ $<
@@ -20,6 +18,9 @@ debug: CFLAGS += -g
 # Make static library
 target : $(OBJECTS)
 	$(AR) $(ARCMD) $(LIB_STATIC) $(OBJECTS)
+
+debug: CFLAGS = -g -c -o
+debug: target
 
 # Clean
 clean :
