@@ -474,48 +474,41 @@ void jconf_free_token(jToken* root)
     int i;
 
     // Null check.
-    if (root == NULL || root->data == NULL)
+    if (root == NULL)
         return;
 
     // Recursively free the collection.
-    switch (root->type)
+    if (root->type == JCONF_OBJECT)
     {
-        case JCONF_STRING:
-        case JCONF_NUMBER:
-            free(root->data);
-            break;
-
-        case JCONF_OBJECT:
-            // Iterate through the map and free each element.
-            map = (jMap*)root->data;
-            for (i = 0; i < JCONF_BUCKET_SIZE; i++)
+        // Iterate through the map and free each element.
+        map = (jMap*)root->data;
+        for (i = 0; i < JCONF_BUCKET_SIZE; i++)
+        {
+            node = (jNode*)map->buckets[i];
+            while (node)
             {
-                node = (jNode*)map->buckets[i];
-                while (node)
-                {
-                    free((void*)node->key);
-                    jconf_free_token((jToken*)node->value);
-                    node = node->next;
-                }
-                map->buckets[i] = NULL;
+                free((void*)node->key);
+                jconf_free_token((jToken*)node->value);
+                node = node->next;
             }
-            // Destroy the map.
-            jconf_destroy_map(map);
-            break;
+        }
+        // Destroy the map.
+        jconf_destroy_map(map);
+    }
+    else if (root->type == JCONF_ARRAY)
+    {
+        // Iterate through the array and free each element.
+        arr = (jArray*)root->data;
+        for (i = 0; i < arr->end; i++)
+            jconf_free_token(jconf_array_get(arr, i));
 
-        case JCONF_ARRAY:
-            // Iterate through the array and free each element.
-            arr = (jArray*)root->data;
-            for (i = 0; i < arr->end; i++)
-                jconf_free_token(jconf_array_get(arr, i));
-
-            // Destroy the array.
-            jconf_destroy_array(arr);
-            break;
-        default:
-            break;
+        // Destroy the array.
+        jconf_destroy_array(arr);
+    }
+    else if (root->data != NULL)
+    {
+        free(root->data);
     }
 
-    root->data = NULL;
     free(root);
 }
