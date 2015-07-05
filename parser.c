@@ -5,7 +5,7 @@
  * Date: 2015-06-23
  */
 
-#include "jconf.h"
+#include "parser.h"
 
 /**
  * JConf Scan String

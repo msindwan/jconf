@@ -1,5 +1,5 @@
 /**
- * JConf
+ * JConf Parser
  *
  * Description: JConf parses JSON files to c struct tokens.
  * Author: Mayank Sindwani
@@ -9,8 +9,8 @@
 #ifndef __JCONF_H__
 #define __JCONF_H__
 
-#include "jconf\array.h"
-#include "jconf\map.h"
+#include "collections\array.h"
+#include "collections\map.h"
 
 // Ctype macros.
 #define jconf_isctrl(c)  (c == 'n') || (c == '\\') || (c == '/') || (c == 'b') || (c == 'f') || (c == 'r') || (c == 't') || (c == 'u') ? 1 : 0

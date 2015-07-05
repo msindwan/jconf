@@ -5,7 +5,7 @@
 CC = gcc
 CCFLAGS = -g -o
 
-OBJECTS = src/jconf.o src/jconf/array.o src/jconf/string.o src/jconf/map.o test.o
+OBJECTS = parser.o collections/array.o collections/string.o collections/map.o test.o
 EXEC = jconftest
 
 # Create the executable

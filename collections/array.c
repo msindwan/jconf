@@ -86,7 +86,9 @@ int jconf_array_set(jArray* arr, int index, void* value)
     // If the index exceeds the size of the array, reallocate enough memory.
     if (index >= arr->size)
     {
-        arr->size = index*arr->expand;
+        while (index >= arr->size)
+            arr->size *= arr->expand;
+ 
         arr->values = (void**)realloc(arr->values, arr->size);
         for (i = arr->end + 1; i < arr->size; i++)
             arr->values[i] = NULL;
