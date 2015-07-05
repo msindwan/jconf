@@ -6,8 +6,8 @@
  * Date: 2015-06-23
  */
 
-#ifndef __JCONF_SERIALIZER_H__
-#define __JCONF_SERIALIZER_H__
+#ifndef __JCONF_H__
+#define __JCONF_H__
 
 #include "collections\array.h"
 #include "collections\map.h"
