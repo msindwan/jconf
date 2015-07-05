@@ -11,3 +11,4 @@ echo 'Running tests...'
 echo ''
 
 ./jconftest
+make clean
