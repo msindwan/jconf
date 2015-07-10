@@ -24,6 +24,8 @@ int   jconf_init_array(jArray*, int, int);
 void  jconf_destroy_array(jArray*);
 
 int   jconf_array_push(jArray*, void*);
+void* jconf_array_pop(jArray*);
+
 int   jconf_array_set(jArray*, int, void*);
 void* jconf_array_get(jArray*, int);
 

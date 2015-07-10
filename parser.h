@@ -13,7 +13,7 @@
 #include "collections\map.h"
 
 // Ctype macros.
-#define jconf_isctrl(c)  (c == 'n') || (c == '\\') || (c == '/') || (c == 'b') || (c == 'f') || (c == 'r') || (c == 't') || (c == 'u') ? 1 : 0
+#define jconf_isctrl(c)  ((c == 'n') || (c == '\\') || (c == '/') || (c == 'b') || (c == 'f') || (c == 'r') || (c == 't') || (c == 'u')) ? 1 : 0
 #define jconf_isxdigit(c) ((c>= '0') && (c <= '9')) || ((c >= 'A') && (c <= 'F')) || ((c >= 'a') && (c <= 'f')) ? 1 : 0
 #define jconf_isspace(c) (c>=0x09 && c<=0x0D) || (c==0x20) ? 1 : 0
 
@@ -73,14 +73,12 @@ typedef struct _j_token
 typedef struct _j_error
 {
     J_ERROR_CODE e;
-    int line,
-        length,
-        pos;
+    int line, pos;
 
 } jError;
 
 // JConf API.
-jToken* jconf_json2c(const char*, size_t, jError*);
+jToken* jconf_json2c(const char*, int, jError*);
 void jconf_free_token(jToken*);
 
 #endif

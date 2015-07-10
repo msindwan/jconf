@@ -19,6 +19,7 @@ typedef struct _j_node
 {
     const char* key;
     void* value;
+    int len;
     struct _j_node* next;
 
 } jNode;
@@ -35,8 +36,8 @@ typedef struct _j_map
 void   jconf_init_map(jMap*);
 void   jconf_destroy_map(jMap*);
 
-int    jconf_map_set(jMap*, const char*, void*, void**);
+int    jconf_map_set(jMap*, const char*, int, void*, void**);
 void*  jconf_map_get(jMap*, const char*);
-jNode* jconf_map_delete(jMap*, const char*);
+void   jconf_map_delete(jMap*, jNode*, const char*);
 
 #endif

@@ -15,13 +15,12 @@
  * @param[out] {key} // The key to use to generate the hash.
  * @returns // The hash value.
  */
-static unsigned int jconf_hash(const char* key)
+static unsigned int jconf_hash(const char* key, unsigned int length)
 {
-    unsigned int len, hash, i;
-    len = jconf_strlen(key);
+    unsigned int hash, i;
 
     // Bit shift the hash using the key.
-    for (hash = i = 0; i < len; ++i)
+    for (hash = i = 0; i < length; ++i)
     {
         hash += key[i];
         hash += (hash << 10);
@@ -32,8 +31,8 @@ static unsigned int jconf_hash(const char* key)
     hash ^= (hash >> 11);
     hash += (hash << 15);
 
-    // Return a number from 0 to JCONF_BUCKET_SIZE.
-    return hash % JCONF_BUCKET_SIZE;
+    // Return a number from 0 to JCONF_BUCKET_SIZE - 1.
+    return hash % (JCONF_BUCKET_SIZE - 1);
 }
 
 /**
@@ -85,18 +84,19 @@ void jconf_destroy_map(jMap* map)
  * JConf Map Set
  *
  * Description: Add an entry to the map with the associated key.
- * @param[in]  {map}   // The map to append the entry to.
- * @param[out] {key}   // The associated key.
- * @param[out] {value} // The value to store.
- * @param[in]  {prev}  // A pointer to a void pointer for the previous value.
- * @returns            // '1' if successful, '0' if out of memory.
+ * @param[in]  {map}    // The map to append the entry to.
+ * @param[out] {key}    // The associated key.
+ * @param[out] {length} // The length of the key.
+ * @param[out] {value}  // The value to store.
+ * @param[in]  {prev}   // A pointer to a void pointer for the previous value.
+ * @returns             // '1' if successful, '0' if out of memory.
  */
-int jconf_map_set(jMap* map, const char* key, void* value, void** prev)
+int jconf_map_set(jMap* map, const char* key, int length, void* value, void** prev)
 {
-    jNode **head, *node, *temp;
+    jNode **head, *node, *last, *temp;
     unsigned int index;
 
-    index = jconf_hash(key);
+    index = jconf_hash(key, length);
     head = &map->buckets[index];
 
     // Append a node to the linked list for the bucket.
@@ -109,23 +109,25 @@ int jconf_map_set(jMap* map, const char* key, void* value, void** prev)
 
         (*head)->key = key;
         (*head)->value = value;
+        (*head)->len = length;
         (*head)->next = NULL;
     }
     else
     {
-        temp = (*head);
-        while (temp->next != NULL)
+        temp = last = (*head);
+        while (temp != NULL)
         {
             // If the node exists, set the new value and return the old one.
-            if (jconf_strcmp(temp->key, key) == 0)
+            if (jconf_strncmp(temp->key, key, temp->len) == 0)
             {
-                if (*prev != NULL)
-                {
+                if (prev != NULL)
                     *prev = temp->value;
-                    temp->value = value;
-                }
+                
+                temp->value = value;
                 return 1;
             }
+            
+            last = temp;
             temp = temp->next;
         }
 
@@ -136,12 +138,14 @@ int jconf_map_set(jMap* map, const char* key, void* value, void** prev)
 
         node->key = key;
         node->value = value;
+        node->len = length;
         node->next = NULL;
-        temp->next = node;
+        last->next = node;
     }
 
     map->count++;
-    *prev = NULL;
+    if (prev != NULL)
+        *prev = NULL;
     return 1;
 }
 
@@ -158,14 +162,14 @@ void* jconf_map_get(jMap* map, const char* key)
     unsigned int index;
     jNode *entry;
 
-    index = jconf_hash(key);
+    index = jconf_hash(key, jconf_strlen(key));
     entry = map->buckets[index];
 
     // Search the linked list.
     while (entry)
     {
         // If the keys match, return the value.
-        if (jconf_strncmp(entry->key, key, jconf_strlen(key)) == 0)
+        if (jconf_strncmp(entry->key, key, entry->len) == 0)
             return entry->value;
 
         entry = entry->next;
@@ -178,36 +182,55 @@ void* jconf_map_get(jMap* map, const char* key)
  * JConf Map Delete
  *
  * Description: Delete an entry from the map.
- * @param[in]  {map} // The map to delete the entry from.
- * @param[out] {key} // The key used to search the map.
- * @returns          // The node (NULL if not found).
+ * @param[in]  {map}  // The map to delete the entry from.
+ * @param[in]  {node} // The node to store the deleted node in.
+ * @param[out] {key}  // The key used to search the map.
  */
-jNode* jconf_map_delete(jMap* map, const char* key)
+void jconf_map_delete(jMap* map, jNode* node, const char* key)
 {
     jNode *entry, *temp;
-    unsigned int index;
-
-    index = jconf_hash(key);
+    int index;
+        
+    index = jconf_hash(key, jconf_strlen(key));
     entry = map->buckets[index];
 
-    temp = entry;
-    while (temp)
+    temp = NULL;
+    while (entry)
     {
         // If the entry is found, delete the node from the list.
-        if (jconf_strncmp(entry->key, key, jconf_strlen(key)) == 0)
+        if (jconf_strncmp(entry->key, key, entry->len) == 0)
         {
-            temp = entry->next;
-            entry->key = entry->next->key;
-            entry->value = entry->next->value;
+            node->key   = entry->key;
+            node->value = entry->value;
+            node->next  = entry->next;
 
-            // Switch nodes.
-            entry->next = entry->next->next;
-            return temp;
+            if (entry->next == NULL)
+            {
+                free(entry);
+
+                if (temp == NULL) // Only one entry in the list
+                    map->buckets[index] = NULL;
+                else
+                    temp->next = NULL;
+            }
+            else 
+            {
+                // Point the previous entry to the deleted node's proceeding element.
+                entry->key = node->next->key;
+                entry->value = node->next->value;
+                entry->next = node->next->next;
+                free(node->next);
+                node->next = NULL;
+            }
+
+            map->count--;
+            return;
         }
 
-        temp = temp->next;
+        temp = entry;
+        entry = entry->next;
     }
 
-    // Return NULL if not found.
-    return NULL;
+    // Return if not found.
+    return;
 }

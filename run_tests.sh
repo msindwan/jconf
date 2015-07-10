@@ -1,14 +1,11 @@
 #! /bin/bash
 
 echo ''
-echo 'Rebuilding test suite...'
-echo ''
+echo 'REBUILDING TEST SUITE...'
 
-make clean && make
+make clean > /dev/null && make test > /dev/null
 
-echo ''
-echo 'Running tests...'
 echo ''
 
 ./jconftest
-make clean
+make clean > /dev/null

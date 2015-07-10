@@ -18,19 +18,14 @@
  */
 int jconf_init_array(jArray* arr, int size, int expand)
 {
-    int i;
-
     arr->end = 0;
     arr->size = size;
     arr->expand = expand;
-    arr->values = (void**)malloc(size*sizeof(void*));
+    arr->values = (void**)calloc(size, sizeof(void*));
 
     if (arr->values == NULL)
         return 0;
-
-    for (i = 0; i < size; i++)
-        arr->values[i] = NULL;
-
+    
     return 1;
 }
 
@@ -43,6 +38,7 @@ int jconf_init_array(jArray* arr, int size, int expand)
 void jconf_destroy_array(jArray* arr)
 {
     free(arr->values);
+    free(arr);
 }
 
 /**
@@ -51,24 +47,48 @@ void jconf_destroy_array(jArray* arr)
  * Description: Appends an element to a jArray instance.
  * @param[in]  {arr}   // The jArray to append to.
  * @param[out] {value} // The value to append.
+ * @returns // '1' if successful, '0' if out of memory
  */
 int jconf_array_push(jArray* arr, void* value)
 {
     int i;
 
     // The count exceeds the size, reallocate the array.
-    if (arr->end + 1 > arr->size)
+    if (arr->end >= arr->size)
     {
         arr->size *= arr->expand;
         arr->values = (void**)realloc(arr->values, arr->size*sizeof(void*));
-        for (i = arr->end + 1; i < arr->size; i++)
+
+        if (arr->values == NULL)
+            return 0;
+
+        for (i = arr->end; i < arr->size; i++)
             arr->values[i] = NULL;
     }
 
     // Add the element to the end of the array.
     arr->values[arr->end] = value;
     arr->end++;
-    return 0;
+    return 1;
+}
+
+/**
+ * JConf Array Pop
+ *
+ * Description: Returns the last element in the array.
+ * @param[in] {arr} // The jArray to pop the last element from.
+ * @returns         // The last value.  
+ */
+void* jconf_array_pop(jArray* arr)
+{
+    void* value;
+
+    if (arr->end == 0)
+        return NULL;
+
+    value = arr->values[--arr->end];
+    arr->values[arr->end] = NULL;
+    return value;
 }
 
 /**
@@ -89,17 +109,20 @@ int jconf_array_set(jArray* arr, int index, void* value)
         while (index >= arr->size)
             arr->size *= arr->expand;
  
-        arr->values = (void**)realloc(arr->values, arr->size);
-        for (i = arr->end + 1; i < arr->size; i++)
+        arr->values = (void**)realloc(arr->values, arr->size*sizeof(void*));
+        if (arr->values == NULL)
+            return 0;
+
+        for (i = arr->end; i < arr->size; i++)
             arr->values[i] = NULL;
     }
 
-    if (index > arr->end)
-        arr->end = index;
+    if (index >= arr->end)
+        arr->end = index + 1;
 
     // Insert the element.
     arr->values[index] = value;
-    return 0;
+    return 1;
 }
 
 /**

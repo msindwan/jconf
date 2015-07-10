@@ -10,9 +10,9 @@
 #define __STRING_JCONF_H__
 
 // String library.
-void jconf_strncpy(char* dest, const char* src, int length);
-int  jconf_strncmp(const char* a, const char* b, int length);
-int  jconf_strcmp(const char* a, const char* b);
-unsigned int jconf_strlen(const char* src);
+int  jconf_strncmp(const char*, const char*, int);
+int  jconf_strcmp(const char*, const char*);
+void jconf_strncpy(char*, const char*, int);
+int  jconf_strlen(const char*);
 
 #endif
