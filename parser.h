@@ -14,24 +14,9 @@
 
 // Ctype macros.
 #define jconf_isctrl(c)  ((c == 'n') || (c == '\\') || (c == '/') || (c == 'b') || (c == 'f') || (c == 'r') || (c == 't') || (c == 'u')) ? 1 : 0
-#define jconf_isxdigit(c) ((c>= '0') && (c <= '9')) || ((c >= 'A') && (c <= 'F')) || ((c >= 'a') && (c <= 'f')) ? 1 : 0
+#define jconf_isdigit(c) ((c>= '0') && (c <= '9')) ? 1 : 0
+#define jconf_isxdigit(c) jconf_isdigit(c) || ((c >= 'A') && (c <= 'F')) || ((c >= 'a') && (c <= 'f')) ? 1 : 0
 #define jconf_isspace(c) (c>=0x09 && c<=0x0D) || (c==0x20) ? 1 : 0
-
-// JSON parse state.
-enum __JCONF_PARSE_STATE
-{
-    JCONF_START_STATE = 0,
-    JCONF_OBJECT_INIT,
-    JCONF_OBJECT_KEY,
-    JCONF_OBJECT_COLON,
-    JCONF_OBJECT_VALUE,
-    JCONF_OBJECT_NEXT,
-    JCONF_ARRAY_INIT,
-    JCONF_ARRAY_VALUE,
-    JCONF_ARRAY_NEXT,
-    JCONF_END_STATE,
-    JCONF_ERROR_STATE
-};
 
 // Token Error Codes.
 typedef enum _j_err_code
@@ -43,6 +28,7 @@ typedef enum _j_err_code
     JCONF_UNEXPECTED_TOK,
     JCONF_UNEXPECTED_EXPR,
     JCONF_UNEXPECTED_EOF,
+    JCONF_EXPECTED_EOF,
     JCONF_INVALID_NUMBER,
     JCONF_OUT_OF_MEMORY
 
@@ -73,7 +59,8 @@ typedef struct _j_token
 typedef struct _j_error
 {
     J_ERROR_CODE e;
-    int line, pos;
+    int line;
+    int pos;
 
 } jError;
 
