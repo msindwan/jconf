@@ -63,10 +63,7 @@ static void jconf_parse_number(const char* buffer, jToken* token, int size, jErr
     for (; err->pos < size && (c = buffer[err->pos]) != ',' && c != '}' && c != ']'; err->pos++)
     {
         if (jconf_isspace(c))
-        {
-            if (c == '\n') err->line++;
-            continue;
-        }
+            break;
 
         switch(state)
         {
