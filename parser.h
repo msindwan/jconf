@@ -1,6 +1,10 @@
 /**
  * JConf Parser
  *
+ * Copyright 2015 Mayank Sindwani
+ * Released under the MIT License:
+ * http://opensource.org/licenses/MIT
+ *
  * Description: JConf parses JSON files to c struct tokens.
  * Author: Mayank Sindwani
  * Date: 2015-06-23
@@ -13,10 +17,11 @@
 #include "collections\map.h"
 
 // Ctype macros.
-#define jconf_isctrl(c)  ((c == 'n') || (c == '\\') || (c == '/') || (c == 'b') || (c == 'f') || (c == 'r') || (c == 't') || (c == 'u')) ? 1 : 0
+
 #define jconf_isdigit(c) ((c>= '0') && (c <= '9')) ? 1 : 0
-#define jconf_isxdigit(c) jconf_isdigit(c) || ((c >= 'A') && (c <= 'F')) || ((c >= 'a') && (c <= 'f')) ? 1 : 0
 #define jconf_isspace(c) (c>=0x09 && c<=0x0D) || (c==0x20) ? 1 : 0
+#define jconf_isxdigit(c) jconf_isdigit(c) || ((c >= 'A') && (c <= 'F')) || ((c >= 'a') && (c <= 'f')) ? 1 : 0
+#define jconf_isctrl(c)  ((c == 'n') || (c == '\\') || (c == '/') || (c == 'b') || (c == 'f') || (c == 'r') || (c == 't') || (c == 'u')) ? 1 : 0
 
 // Token Error Codes.
 typedef enum _j_err_code
@@ -43,7 +48,8 @@ typedef enum _j_tok_type
     JCONF_ARRAY,
     JCONF_OBJECT,
     JCONF_STRING,
-    JCONF_NUMBER
+    JCONF_DOUBLE,
+    JCONF_INT
 
 } jType;
 
