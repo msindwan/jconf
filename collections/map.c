@@ -1,8 +1,12 @@
 /**
  * JConf Map Implementation
  *
+ * Copyright 2015 Mayank Sindwani
+ * Released under the MIT License:
+ * http://opensource.org/licenses/MIT
+ *
  * Author: Mayank Sindwani
- * Date: 2015-06-23
+ * Date: 2015-07-11
  */
 
 #include "map.h"
@@ -75,9 +79,6 @@ void jconf_destroy_map(jMap* map)
             }
         }
     }
-
-    // Free the map instance.
-    free(map);
 }
 
 /**
@@ -122,11 +123,11 @@ int jconf_map_set(jMap* map, const char* key, int length, void* value, void** pr
             {
                 if (prev != NULL)
                     *prev = temp->value;
-                
+
                 temp->value = value;
                 return 1;
             }
-            
+
             last = temp;
             temp = temp->next;
         }
@@ -162,7 +163,7 @@ void* jconf_map_get(jMap* map, const char* key)
     unsigned int index;
     jNode *entry;
 
-    index = jconf_hash(key, jconf_strlen(key));
+    index = jconf_hash(key, jconf_strlen(key, NULL));
     entry = map->buckets[index];
 
     // Search the linked list.
@@ -190,8 +191,8 @@ void jconf_map_delete(jMap* map, jNode* node, const char* key)
 {
     jNode *entry, *temp;
     int index;
-        
-    index = jconf_hash(key, jconf_strlen(key));
+
+    index = jconf_hash(key, jconf_strlen(key, NULL));
     entry = map->buckets[index];
 
     temp = NULL;
@@ -213,7 +214,7 @@ void jconf_map_delete(jMap* map, jNode* node, const char* key)
                 else
                     temp->next = NULL;
             }
-            else 
+            else
             {
                 // Point the previous entry to the deleted node's proceeding element.
                 entry->key = node->next->key;

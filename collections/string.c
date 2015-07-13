@@ -1,8 +1,12 @@
 /**
  * JConf String Implementation
  *
- * Date: 2015-06-23
+ * Copyright 2015 Mayank Sindwani
+ * Released under the MIT License:
+ * http://opensource.org/licenses/MIT
+ *
  * Author: Mayank Sindwani
+ * Date: 2015-07-11
  */
 
 #include "string.h"
@@ -79,9 +83,27 @@ void jconf_strncpy(char* dest, const char* src, int length)
  * @param[out] {src} // The source string.
  * @returns[out]     // The length of the source buffer.
  */
-int jconf_strlen(const char* src)
+int jconf_strlen(const char* src, const char* delemiters)
 {
-    char* p = (char*)src;
-    while (*p != '\0') p++;
+    char* p = (char*)src, *q = (char*)delemiters;
+    int i = 0, j = 0;
+    char tokens[100];
+
+    while (q != 0 && *q != '\0' && i < 100)
+    {
+        while (*q == ' ' || *q == ',') q++;
+        if (*q == '\'') tokens[i] = *(++q);
+        q += 2; i++;
+    }
+
+    while (*p != '\0')
+    {
+        for (j = 0; j < i; j++)
+        {
+            if (*p == tokens[j])
+                return p - src;
+        }
+        p++;
+    }
     return p - src;
 }

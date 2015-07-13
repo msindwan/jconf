@@ -1,8 +1,12 @@
 /**
  * JConf Array Implementation
  *
+ * Copyright 2015 Mayank Sindwani
+ * Released under the MIT License:
+ * http://opensource.org/licenses/MIT
+ *
  * Author: Mayank Sindwani
- * Date: 2015-06-23
+ * Date: 2015-07-11
  */
 
 #include "array.h"
@@ -25,7 +29,7 @@ int jconf_init_array(jArray* arr, int size, int expand)
 
     if (arr->values == NULL)
         return 0;
-    
+
     return 1;
 }
 
@@ -38,7 +42,6 @@ int jconf_init_array(jArray* arr, int size, int expand)
 void jconf_destroy_array(jArray* arr)
 {
     free(arr->values);
-    free(arr);
 }
 
 /**
@@ -77,7 +80,7 @@ int jconf_array_push(jArray* arr, void* value)
  *
  * Description: Returns the last element in the array.
  * @param[in] {arr} // The jArray to pop the last element from.
- * @returns         // The last value.  
+ * @returns         // The last value.
  */
 void* jconf_array_pop(jArray* arr)
 {
@@ -108,7 +111,7 @@ int jconf_array_set(jArray* arr, int index, void* value)
     {
         while (index >= arr->size)
             arr->size *= arr->expand;
- 
+
         arr->values = (void**)realloc(arr->values, arr->size*sizeof(void*));
         if (arr->values == NULL)
             return 0;

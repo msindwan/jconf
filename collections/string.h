@@ -1,6 +1,10 @@
 /**
  * JConf String
  *
+ * Copyright 2015 Mayank Sindwani
+ * Released under the MIT License:
+ * http://opensource.org/licenses/MIT
+ *
  * Description: Safe string utility functions.
  * Author: Mayank Sindwani
  * Date: 2015-06-23
@@ -13,6 +17,6 @@
 int  jconf_strncmp(const char*, const char*, int);
 int  jconf_strcmp(const char*, const char*);
 void jconf_strncpy(char*, const char*, int);
-int  jconf_strlen(const char*);
+int  jconf_strlen(const char*, const char*);
 
 #endif
