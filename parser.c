@@ -18,14 +18,14 @@
  *
  * @param[in]  {memory} // The destination pointer for allocated memory.
  * @param[out] {size}   // The amount to allocate
- * @param[out] {err}    // The error struct to fill out.
+ * @param[out] {args}   // The args struct to fill out.
  * @returns             // '1' if successful, '0' if out of memory
  */
-static __inline int jconf_alloc(void** memory, int size, jError* err)
+static __inline int jconf_alloc(void** memory, int size, jArgs* args)
 {
     if ((*memory = malloc(size)) == NULL)
     {
-        err->e = JCONF_OUT_OF_MEMORY;
+        args->e = JCONF_OUT_OF_MEMORY;
         return 0;
     }
     return 1;
@@ -39,9 +39,9 @@ static __inline int jconf_alloc(void** memory, int size, jError* err)
  * @param[out] {buffer} // The string to scan.
  * @param[out] {size}   // The size of the buffer.
  * @param[in]  {token}  // The token to store the number.
- * @param[in]  {error}  // The error struct to fill.
+ * @param[in]  {args}   // The args struct to fill.
  */
-static void jconf_parse_number(const char* buffer, jToken* token, int size, jError* err)
+static void jconf_parse_number(const char* buffer, jToken* token, int size, jArgs* args)
 {
     // JSON number states
     static const int
@@ -53,14 +53,14 @@ static void jconf_parse_number(const char* buffer, jToken* token, int size, jErr
         EXP = 5,
         DECIMAL_DIGIT = 6;
 
-    int init_pos = err->pos, state = 0;
+    int init_pos = args->pos, state = 0;
     char c;
 
     token->type = JCONF_INT;
-    err->e = JCONF_INVALID_NUMBER;
+    args->e = JCONF_INVALID_NUMBER;
 
     // Check if the expression is a number.
-    for (; err->pos < size && (c = buffer[err->pos]) != ',' && c != '}' && c != ']'; err->pos++)
+    for (; args->pos < size && (c = buffer[args->pos]) != ',' && c != '}' && c != ']'; args->pos++)
     {
         if (jconf_isspace(c))
             break;
@@ -104,9 +104,9 @@ static void jconf_parse_number(const char* buffer, jToken* token, int size, jErr
 
     if (state == INIT || state == EXP) return;
 
-    err->e = JCONF_NO_ERROR;
+    args->e = JCONF_NO_ERROR;
     token->data = (char*)(buffer + init_pos);
-    err->pos--;
+    args->pos--;
 }
 
 /**
@@ -117,47 +117,49 @@ static void jconf_parse_number(const char* buffer, jToken* token, int size, jErr
  * @param[out] {buffer} // The string to scan.
  * @param[in]  {dest}   // The destination buffer for the string.
  * @param[out] {size}   // The size of the buffer.
- * @param[in]  {error}  // The error struct to fill.
+ * @param[in]  {args}   // The args struct to fill.
  */
-static void jconf_parse_string(const char* buffer, char** dest, int size, jError* err)
+static void jconf_parse_string(const char* buffer, char** dest, int size, jArgs* args)
 {
     int j, init_pos;
     char c;
 
-    init_pos = err->pos + 1;
-    while (++err->pos < size && (c = buffer[err->pos]) != '\"')
+    init_pos = args->pos + 1;
+    while (++args->pos < size && (c = buffer[args->pos]) != '\"')
     {
         if (c == '\\')
         {
             // Unrecognized control sequence.
-            if (++err->pos >= size || !jconf_isctrl((c = buffer[err->pos]))) {
-                err->e = JCONF_INVALID_CTRL_SEQUENCE; return;
+            if (++args->pos >= size || !jconf_isctrl((c = buffer[args->pos]))) {
+                args->e = JCONF_INVALID_CTRL_SEQUENCE; return;
             }
 
             if (c == 'u')
             {
                 // Expected four hexadecimal digits.
-                if (err->pos + 4 >= size) {
-                    err->e = JCONF_HEX_REQUIRED; return;
+                if (args->pos + 4 >= size) {
+                    args->e = JCONF_HEX_REQUIRED; return;
                 }
 
                 for (j = 0; j < 4; j++)
                 {
                     // Invalid hex char.
-                    if (!jconf_isxdigit(buffer[++err->pos])) {
-                        err->e = JCONF_INVALID_HEX; return;
+                    args->pos++;
+                    if (!jconf_isxdigit(buffer[args->pos])) 
+                    {
+                        args->e = JCONF_INVALID_HEX; return;
                     }
                 }
             }
         }
     }
 
-    if (err->pos >= size) {
-        err->e = JCONF_UNEXPECTED_TOK; return;
+    if (args->pos >= size) {
+        args->e = JCONF_UNEXPECTED_TOK; return;
     }
 
     *dest = (char*)(buffer + init_pos);
-    err->e = JCONF_NO_ERROR;
+    args->e = JCONF_NO_ERROR;
 }
 
 /**
@@ -168,46 +170,46 @@ static void jconf_parse_string(const char* buffer, char** dest, int size, jError
  * @param[out] {buffer} // The string to parse.
  * @param[out] {token}  // The token used to store the value.
  * @param[out] {size}   // The size of the buffer.
- * @param[in]  {error}  // The error struct to fill.
+ * @param[in]  {args}   // The args struct to fill.
  */
-static void jconf_parse_value(const char* buffer, jToken* token, int size, jError* err)
+static void jconf_parse_value(const char* buffer, jToken* token, int size, jArgs* args)
 {
     char c;
 
     token->data = NULL;
 
     // Parse string
-    if((c = buffer[err->pos]) == '\"')
+    if((c = buffer[args->pos]) == '\"')
     {
         token->type = JCONF_STRING;
-        jconf_parse_string(buffer, (char**)&token->data, size, err);
-        if (err->e != JCONF_NO_ERROR)
+        jconf_parse_string(buffer, (char**)&token->data, size, args);
+        if (args->e != JCONF_NO_ERROR)
         {
             free(token);
             return;
         }
     }
     // Compare the string to static JSON keywords.
-    else if (!jconf_strncmp("false", buffer + err->pos, 5))
+    else if (!jconf_strncmp("false", buffer + args->pos, 5))
     {
         token->type = JCONF_FALSE;
-        err->pos += 4;
+        args->pos += 4;
     }
-    else if (!jconf_strncmp("true", buffer + err->pos, 4))
+    else if (!jconf_strncmp("true", buffer + args->pos, 4))
     {
         token->type = JCONF_TRUE;
-        err->pos += 3;
+        args->pos += 3;
     }
-    else if (!jconf_strncmp("null", buffer + err->pos, 4))
+    else if (!jconf_strncmp("null", buffer + args->pos, 4))
     {
         token->type = JCONF_NULL;
-        err->pos += 3;
+        args->pos += 3;
     }
     else
     {
         // Parse number.
-        jconf_parse_number(buffer, token, size, err);
-        if (err->e != JCONF_NO_ERROR)
+        jconf_parse_number(buffer, token, size, args);
+        if (args->e != JCONF_NO_ERROR)
         {
             free(token);
             return;
@@ -224,10 +226,10 @@ static void jconf_parse_value(const char* buffer, jToken* token, int size, jErro
  * @param[in]  {tokens} // The root token of the JSON tree.
  * @param[out] {buffer} // The string to parse.
  * @param[out] {size}   // The size of the buffer.
- * @param[in]  {err}    // The object to store error related information
+ * @param[in]  {args}   // The object to store parsing related information
  * @returns             // The state of the DFA.
  */
-static int jconf_parse_json(jToken* tokens, const char* buffer, int size, jError* err)
+static int jconf_parse_json(jToken* tokens, const char* buffer, int size, jArgs* args)
 {
     // JSON parse states.
     static const int
@@ -248,29 +250,29 @@ static int jconf_parse_json(jToken* tokens, const char* buffer, int size, jError
     jArray* arr;
     jMap* map;
 
-    for (tokens->data = NULL; err->pos < size; err->pos++)
+    for (tokens->data = NULL; args->pos < size; args->pos++)
     {
         // Ignore space characters and update the line number.
-        if (jconf_isspace((c = buffer[err->pos])))
+        if (jconf_isspace((c = buffer[args->pos])))
         {
-            if (c == '\n') err->line++;
+            if (c == '\n') args->line++;
             continue;
         }
 
         // Ignore comments from the JSON string.
         if (c == '/')
         {
-            c = buffer[++err->pos];
+            c = buffer[++args->pos];
             if (c == '*')
-            while (err->pos < size && buffer[++err->pos] == '*' && buffer[++err->pos] == '/');
+            while (args->pos < size && buffer[++args->pos] == '*' && buffer[++args->pos] == '/');
 
             else if (c == '/')
-            while (err->pos < size && buffer[++err->pos] != '\n');
+            while (args->pos < size && buffer[++args->pos] != '\n');
 
             // If the end of the buffer is reached before an object is parsed, return an error.
-            if (err->pos == size)
+            if (args->pos == size)
             {
-                err->e = JCONF_UNEXPECTED_EOF;
+                args->e = JCONF_UNEXPECTED_EOF;
                 goto cleanup;
             }
             continue;
@@ -295,7 +297,7 @@ static int jconf_parse_json(jToken* tokens, const char* buffer, int size, jError
                 else
                 {
                     // Unexpected token at start state.
-                    err->e = JCONF_UNEXPECTED_TOK;
+                    args->e = JCONF_UNEXPECTED_TOK;
                     goto cleanup;
                 }
                 break;
@@ -304,7 +306,7 @@ static int jconf_parse_json(jToken* tokens, const char* buffer, int size, jError
                 if (c == '}')
                     return END;
 
-                if (!jconf_alloc(&tokens->data, sizeof(*map), err))
+                if (!jconf_alloc(&tokens->data, sizeof(*map), args))
                     goto cleanup;
 
                 jconf_init_map((jMap*)tokens->data);
@@ -312,17 +314,17 @@ static int jconf_parse_json(jToken* tokens, const char* buffer, int size, jError
             case 2: // OBJECT_KEY
                 if (c == '\"')
                 {
-                    j = err->pos + 1;
+                    j = args->pos + 1;
 
                     // Parse the JSON string.
-                    jconf_parse_string(buffer, &key, size, err);
-                    if (err->e != JCONF_NO_ERROR) goto cleanup;
-                    keylen = err->pos - j;
+                    jconf_parse_string(buffer, &key, size, args);
+                    if (args->e != JCONF_NO_ERROR) goto cleanup;
+                    keylen = args->pos - j;
                 }
                 else
                 {
                     // Unexpected quote character.
-                    err->e = JCONF_UNEXPECTED_TOK;
+                    args->e = JCONF_UNEXPECTED_TOK;
                     goto cleanup;
                 }
                 state = OBJECT_COLON;
@@ -331,7 +333,7 @@ static int jconf_parse_json(jToken* tokens, const char* buffer, int size, jError
             case 3: // OBJECT_COLON
                 if (c != ':')
                 {
-                    err->e = JCONF_UNEXPECTED_TOK;
+                    args->e = JCONF_UNEXPECTED_TOK;
                     goto cleanup;
                 }
 
@@ -342,28 +344,28 @@ static int jconf_parse_json(jToken* tokens, const char* buffer, int size, jError
                 if (c == ']')
                     return END;
 
-                if (!jconf_alloc(&tokens->data, sizeof(*arr), err) || !jconf_init_array((jArray*)tokens->data, 1, 2))
+                if (!jconf_alloc(&tokens->data, sizeof(*arr), args) || !jconf_init_array((jArray*)tokens->data, 1, 2))
                 {
-                    err->e = JCONF_OUT_OF_MEMORY;
+                    args->e = JCONF_OUT_OF_MEMORY;
                     goto cleanup;
                 }
                 state = VALUE;
 
             case 5: // VALUE
-                if (!jconf_alloc((void**)&token, sizeof(*token), err))
+                if (!jconf_alloc((void**)&token, sizeof(*token), args))
                     goto cleanup;
 
                 if (c == '{' || c == '[')
                 {
                     // Recurse on the nested object.
-                    if (jconf_parse_json(token, buffer, size, err) == ERROR)
+                    if (jconf_parse_json(token, buffer, size, args) == ERROR)
                         goto cleanup;
                 }
                 else
                 {
                     // Parse value.
-                    jconf_parse_value(buffer, token, size, err);
-                    if (err->e != JCONF_NO_ERROR) goto cleanup;
+                    jconf_parse_value(buffer, token, size, args);
+                    if (args->e != JCONF_NO_ERROR) goto cleanup;
                 }
 
                 prev_token = NULL;
@@ -371,7 +373,7 @@ static int jconf_parse_json(jToken* tokens, const char* buffer, int size, jError
                         jconf_array_push((jArray*)tokens->data, token) :
                         jconf_map_set((jMap*)tokens->data, key, keylen, token, (void**)&prev_token)))
                 {
-                    err->e = JCONF_OUT_OF_MEMORY;
+                    args->e = JCONF_OUT_OF_MEMORY;
                     goto cleanup;
                 }
 
@@ -390,13 +392,13 @@ static int jconf_parse_json(jToken* tokens, const char* buffer, int size, jError
                 if ((c == ']' && tokens->type == JCONF_ARRAY) || (c == '}' && tokens->type == JCONF_OBJECT))
                     return END;
 
-                err->e = JCONF_UNEXPECTED_TOK;
+                args->e = JCONF_UNEXPECTED_TOK;
                 goto cleanup;
         }
     }
 
     // Valid JSON files should not reach this point.
-    err->e = JCONF_UNEXPECTED_EOF;
+    args->e = JCONF_UNEXPECTED_EOF;
 
     cleanup:
         jconf_free_token(tokens);
@@ -410,23 +412,23 @@ static int jconf_parse_json(jToken* tokens, const char* buffer, int size, jError
  *
  * @param[out] {buffer} // The string to parse.
  * @param[out] {size}   // The size of the buffer.
- * @param[in]  {err}    // The object to store error related information
+ * @param[in]  {args}   // The object to store parsing related information
  * @returns             // The collection of tokens.
  */
-jToken* jconf_json2c(const char* buffer, int size, jError* err)
+jToken* jconf_json2c(const char* buffer, int size, jArgs* args)
 {
     jToken* collection;
 
-    err->e = JCONF_NO_ERROR;
-    err->line = 1;
-    err->pos = 0;
+    args->e = JCONF_NO_ERROR;
+    args->line = 1;
+    args->pos = 0;
 
     // Create a new collection.
-    if (!jconf_alloc((void**)&collection, sizeof(*collection), err))
+    if (!jconf_alloc((void**)&collection, sizeof(*collection), args))
         return NULL;
 
     // Attempt to parse the buffer.
-    if (jconf_parse_json(collection, buffer, size, err) < 0)
+    if (jconf_parse_json(collection, buffer, size, args) < 0)
         return NULL;
 
     return collection;

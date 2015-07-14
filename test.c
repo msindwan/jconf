@@ -393,7 +393,7 @@ failure:
 int test_parser(void)
 {
     jToken *head, *token;
-    jError error;
+    jArgs args;
     jArray *arr;
     int length;
     char* json;
@@ -407,7 +407,7 @@ int test_parser(void)
     json = load_file("resources/test_one.json", &length);
     if (!assert(json != NULL, "Assert 1: Error reading test_one.json.")) goto failure;
 
-    head = jconf_json2c(json, length, &error);
+    head = jconf_json2c(json, length, &args);
 
     if (!assert(head != NULL && head->type == JCONF_OBJECT, "Assert 2: The valid JSON file was not parsed correctly.")) goto failure;
 
@@ -453,7 +453,7 @@ int test_parser(void)
     free(json);
     jconf_free_token(head);
 
-    logger(PASS, "Test parsing test_one.json [%d lines] (simple valid example).\n", error.line);
+    logger(PASS, "Test parsing test_one.json [%d lines] (simple valid example).\n", args.line);
 
     /**
     * Test large valid JSON.
@@ -461,7 +461,7 @@ int test_parser(void)
     json = load_file("resources/test_two.json", &length);
     if (!assert(json != NULL, "Assert 14: Error reading test_two.json.")) goto failure;
 
-    head = jconf_json2c(json, length, &error);
+    head = jconf_json2c(json, length, &args);
     if (!assert(
         head != NULL && head->type == JCONF_ARRAY,
         "Assert 15: The valid JSON file was not parsed correctly."))
@@ -470,7 +470,7 @@ int test_parser(void)
     free(json);
     jconf_free_token(head);
 
-    logger(PASS, "Test parsing test_two.json [%d lines] (large valid example).\n", error.line);
+    logger(PASS, "Test parsing test_two.json [%d lines] (large valid example).\n", args.line);
 
     /**
     * Test simple invalid JSON.
@@ -478,13 +478,13 @@ int test_parser(void)
     json = load_file("resources/test_three.json", &length);
     if (!assert(json != NULL, "Assert 16: Error reading test_three.json.")) goto failure;
 
-    head = jconf_json2c(json, length, &error);
+    head = jconf_json2c(json, length, &args);
     if (!assert(
-        head == NULL && error.e == JCONF_INVALID_NUMBER,
+        head == NULL && args.e == JCONF_INVALID_NUMBER,
         "Assert 17: Unexpected token error not caught while parsing."
         )) goto failure;
-    
-    logger(PASS, "Test parsing test_three.json [error on line %d] (large invalid example).\n", error.line);
+
+    logger(PASS, "Test parsing test_three.json [error on line %d] (large invalid example).\n", args.line);
 
     /**
      * Test large invalid JSON.
@@ -492,13 +492,16 @@ int test_parser(void)
     json = load_file("resources/test_four.json", &length);
     if (!assert(json != NULL, "Assert 18: Error reading test_four.json.")) goto failure;
 
-    head = jconf_json2c(json, length, &error);
+    head = jconf_json2c(json, length, &args);
     if (!assert(
-        head == NULL && error.e == JCONF_UNEXPECTED_TOK && error.line == 12800,
+        head == NULL && args.e == JCONF_UNEXPECTED_TOK && args.line == 12800,
         "Assert 19: Unexpected token error not caught while parsing."
         )) goto failure;
 
-    logger(PASS, "Test parsing test_four.json [error on line %d] (large invalid example).\n", error.line);
+    free(json);
+    jconf_free_token(head);
+
+    logger(PASS, "Test parsing test_four.json [error on line %d] (large invalid example).\n", args.line);
 
     tear_down();
     return PASS;

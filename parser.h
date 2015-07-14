@@ -19,9 +19,9 @@
 // Ctype macros.
 
 #define jconf_isdigit(c) ((c>= '0') && (c <= '9')) ? 1 : 0
-#define jconf_isspace(c) (c>=0x09 && c<=0x0D) || (c==0x20) ? 1 : 0
-#define jconf_isxdigit(c) jconf_isdigit(c) || ((c >= 'A') && (c <= 'F')) || ((c >= 'a') && (c <= 'f')) ? 1 : 0
-#define jconf_isctrl(c)  ((c == 'n') || (c == '\\') || (c == '/') || (c == 'b') || (c == 'f') || (c == 'r') || (c == 't') || (c == 'u')) ? 1 : 0
+#define jconf_isspace(c) ((c>=0x09 && c<=0x0D) || (c==0x20)) ? 1 : 0
+#define jconf_isxdigit(c) (jconf_isdigit(c) || ((c >= 'A') && (c <= 'F')) || ((c >= 'a') && (c <= 'f'))) ? 1 : 0
+#define jconf_isctrl(c)  ((c == 'n') || (c == '\"') || (c == '\\') || (c == '/') || (c == 'b') || (c == 'f') || (c == 'r') || (c == 't') || (c == 'u')) ? 1 : 0
 
 // Token Error Codes.
 typedef enum _j_err_code
@@ -61,17 +61,17 @@ typedef struct _j_token
 
 } jToken;
 
-// jError struct definition.
-typedef struct _j_error
+// jArgs struct definition.
+typedef struct _j_args
 {
     J_ERROR_CODE e;
     int line;
     int pos;
 
-} jError;
+} jArgs;
 
 // JConf API.
-jToken* jconf_json2c(const char*, int, jError*);
+jToken* jconf_json2c(const char*, int, jArgs*);
 void jconf_free_token(jToken*);
 
 #endif
