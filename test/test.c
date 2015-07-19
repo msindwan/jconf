@@ -9,7 +9,7 @@
  * Date: 2015-07-11
  */
 
-#include "parser.h"
+#include <jconf/parser.h>
 #include <stdarg.h>
 #include <stdio.h>
 
@@ -404,7 +404,7 @@ int test_parser(void)
     /**
     * Test simple valid JSON.
     */
-    json = load_file("resources/test_one.json", &length);
+    json = load_file("test/test_one.json", &length);
     if (!assert(json != NULL, "Assert 1: Error reading test_one.json.")) goto failure;
 
     head = jconf_json2c(json, length, &args);
@@ -458,7 +458,7 @@ int test_parser(void)
     /**
     * Test large valid JSON.
     */
-    json = load_file("resources/test_two.json", &length);
+    json = load_file("test/test_two.json", &length);
     if (!assert(json != NULL, "Assert 14: Error reading test_two.json.")) goto failure;
 
     head = jconf_json2c(json, length, &args);
@@ -475,7 +475,7 @@ int test_parser(void)
     /**
     * Test simple invalid JSON.
     */
-    json = load_file("resources/test_three.json", &length);
+    json = load_file("test/test_three.json", &length);
     if (!assert(json != NULL, "Assert 16: Error reading test_three.json.")) goto failure;
 
     head = jconf_json2c(json, length, &args);
@@ -489,7 +489,7 @@ int test_parser(void)
     /**
      * Test large invalid JSON.
      */
-    json = load_file("resources/test_four.json", &length);
+    json = load_file("test/test_four.json", &length);
     if (!assert(json != NULL, "Assert 18: Error reading test_four.json.")) goto failure;
 
     head = jconf_json2c(json, length, &args);

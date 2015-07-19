@@ -13,8 +13,8 @@
 #ifndef __JCONF_H__
 #define __JCONF_H__
 
-#include "collections\array.h"
-#include "collections\map.h"
+#include "array.h"
+#include "map.h"
 
 // Ctype macros.
 

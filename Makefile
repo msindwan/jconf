@@ -2,22 +2,26 @@
 # Author : Mayank Sindwani
 # Date : 2015-06-27
 
-CC = gcc
-CCFLAGS = -o
+CC       = gcc
+CFLAGS   = -I include/
 
-JCONF = parser.o collections/array.o collections/string.o collections/map.o
-OBJECTS = $(JCONF) test.o
+OBJ      = src/parser.o src/array.o src/string.o src/map.o
+OBJ_TEST = $(OBJ) test/test.o
 
-LIB_STATIC = libjconf.a
-TEST_EXEC = jconftest
+LIB_DIR  = lib
+BIN_DIR  = bin
+LIB      = libjconf.a
+EXEC     = jconftest
 
 # Create the static lib
-$(LIB_STATIC): $(JCONF)
+$(LIB_DIR)/$(LIB): $(OBJ)
+	@mkdir -p $(LIB_DIR)
 	$(AR) rcs $@ $^
 
 # Create the executable
-test: $(OBJECTS)
-	$(CC) $(CCFLAGS) $(TEST_EXEC) $(OBJECTS)
+test: $(OBJ_TEST)
+	@mkdir -p $(BIN_DIR)
+	$(CC) -o $(BIN_DIR)/$(EXEC) $(OBJ_TEST)
 
 clean:
-	rm -rf $(OBJECTS) $(LIB_STATIC) $(TEST_EXEC) $(TEST_EXEC).exe
+	rm -rf $(OBJ_TEST) $(BIN_DIR)

@@ -7,5 +7,5 @@ make clean > /dev/null && make test > /dev/null
 
 echo ''
 
-./jconftest
+./bin/jconftest
 make clean > /dev/null
