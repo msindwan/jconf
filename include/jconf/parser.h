@@ -13,6 +13,10 @@
 #ifndef __JCONF_H__
 #define __JCONF_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "array.h"
 #include "map.h"
 
@@ -73,5 +77,9 @@ typedef struct _j_args
 // JConf API.
 jToken* jconf_json2c(const char*, int, jArgs*);
 void jconf_free_token(jToken*);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
