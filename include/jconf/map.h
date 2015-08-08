@@ -13,6 +13,10 @@
 #ifndef __HASH_MAP_JCONF_H__
 #define __HASH_MAP_JCONF_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "string.h"     // For safe string functions.
 #include <stdlib.h>     // For standard macros and dynamic memory allocation.
 
@@ -43,5 +47,9 @@ void   jconf_destroy_map(jMap*);
 int    jconf_map_set(jMap*, const char*, int, void*, void**);
 void*  jconf_map_get(jMap*, const char*);
 void   jconf_map_delete(jMap*, jNode*, const char*);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

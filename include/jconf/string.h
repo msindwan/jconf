@@ -13,10 +13,18 @@
 #ifndef __STRING_JCONF_H__
 #define __STRING_JCONF_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // String library.
 int  jconf_strncmp(const char*, const char*, int);
 int  jconf_strcmp(const char*, const char*);
 void jconf_strncpy(char*, const char*, int);
 int  jconf_strlen(const char*, const char*);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

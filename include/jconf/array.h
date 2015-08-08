@@ -13,6 +13,10 @@
 #ifndef __ARRAY_JCONF_H__
 #define __ARRAY_JCONF_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdlib.h>  // For standard macros and dynamic memory allocation.
 
 // jArray struct definition.
@@ -32,5 +36,9 @@ void* jconf_array_pop(jArray*);
 
 int   jconf_array_set(jArray*, int, void*);
 void* jconf_array_get(jArray*, int);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
