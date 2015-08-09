@@ -185,7 +185,7 @@ int test_string(void)
     * Test getting string length.
     */
 
-    rtn = jconf_strlen(lhs, "");
+    rtn = jconf_strlen(lhs, NULL);
     if (!assert(rtn == strlen, "Assert 1: The returned string length is incorrect."))      goto failure;
 
     logger(PASS, "Test getting string length.\n");
@@ -420,7 +420,7 @@ int test_parser(void)
     if (!assert(token != NULL && token->type == JCONF_STRING && map->count == 2, "Assert 4: Nested object not parsed correctly.")) goto failure;
 
     length = jconf_strlen("example glossary", NULL);
-    if (!assert(jconf_strlen((char*)token->data, "'\"'") == length, "Assert 5: Incorrect json string processing.")) goto failure;
+    if (!assert(jconf_strlen((char*)token->data, "\"") == length, "Assert 5: Incorrect json string processing.")) goto failure;
     if (!assert(jconf_strncmp((const char*)token->data, "example glossary", length) == 0, "Assert 6: String value not correctly obtained.")) goto failure;
 
     token = (jToken*)jconf_map_get(map, "GlossDiv");
@@ -447,7 +447,7 @@ int test_parser(void)
     if (!assert(token != NULL && token->type == JCONF_STRING, "Assert 12: Array values not preset.")) goto failure;
 
     length = jconf_strlen("GML", NULL);
-    if (!assert(jconf_strlen((char*)token->data, "'\"'") == length, "Assert 13: Incorrect json string processing.")) goto failure;
+    if (!assert(jconf_strlen((char*)token->data, "\"") == length, "Assert 13: Incorrect json string processing.")) goto failure;
     if (!assert(jconf_strncmp((const char*)token->data, "GML", length) == 0, "Assert 14: String value not correctly obtained.")) goto failure;
 
     free(json);

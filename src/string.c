@@ -80,28 +80,22 @@ void jconf_strncpy(char* dest, const char* src, int length)
  * JConf String Length
  *
  * Description : Returns the length of the provided nul-terminated string.
- * @param[out] {src} // The source string.
- * @returns[out]     // The length of the source buffer.
+ * @param[out] {src}         // The source string.
+ * @param[out] {delimiters}  // Termination delimiters.
+ * @returns[out]             // The length of the source buffer.
  */
-int jconf_strlen(const char* src, const char* delemiters)
+int jconf_strlen(const char* src, const char* delimiters)
 {
-    char* p = (char*)src, *q = (char*)delemiters;
-    int i = 0, j = 0;
-    char tokens[100];
-
-    while (q != 0 && *q != '\0' && i < 100)
-    {
-        while (*q == ' ' || *q == ',') q++;
-        if (*q == '\'') tokens[i] = *(++q);
-        q += 2; i++;
-    }
+    char* p = (char*)src, *q;
 
     while (*p != '\0')
     {
-        for (j = 0; j < i; j++)
+        q = (char*)delimiters;
+        while (q != 0 && *q != '\0')
         {
-            if (*p == tokens[j])
+            if (*p == *q)
                 return p - src;
+            q++;
         }
         p++;
     }
