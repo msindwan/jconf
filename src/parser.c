@@ -480,3 +480,64 @@ void jconf_free_token(jToken* root)
     }
     free(root);
 }
+
+/**
+ * JConf Get
+ *
+ * Description: Sets the destination token provided the JSON argument list.
+ *
+ * @param[out] {head}   // The starting token.
+ * @param[out] {format} // The access format.
+ * @returns             // The desitination token.
+ */
+jToken* jconf_get(jToken* head, const char* format, ...)
+{
+    va_list args;
+    jToken* token;
+    jArray* arr;
+    jMap* map;
+    char* p;
+
+    p = (char*)format;
+    token = head;
+
+    va_start(args, format);
+
+    while(*p != '\0')
+    {
+        // Index the object.
+        if (*p == 'o' || *p == 'O')
+        {
+            if (token->type != JCONF_OBJECT)
+                return NULL;
+
+            map = (jMap*)token->data;
+
+            // Retrieve the corresponding token.
+            token = jconf_map_get(map, va_arg(args, char*));
+
+            if (token == NULL)
+                return NULL;
+        }
+        // Index the array.
+        else if (*p == 'a' || *p == 'A')
+        {
+            if (token->type != JCONF_ARRAY)
+                return NULL;
+
+            arr = (jArray*)token->data;
+
+            // Retrieve the corresponding token.
+            token = jconf_array_get(arr, va_arg(args, int));
+
+            if (token == NULL)
+                return NULL;
+        }
+        else
+            return NULL;
+
+        p++;
+    }
+
+    return token;
+}

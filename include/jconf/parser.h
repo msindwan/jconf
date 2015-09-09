@@ -17,6 +17,7 @@
 extern "C" {
 #endif
 
+#include <stdarg.h>
 #include "array.h"
 #include "map.h"
 
@@ -76,6 +77,7 @@ typedef struct _j_args
 
 // JConf API.
 jToken* jconf_json2c(const char*, int, jArgs*);
+jToken* jconf_get(jToken*, const char*, ...);
 void jconf_free_token(jToken*);
 
 #ifdef __cplusplus
