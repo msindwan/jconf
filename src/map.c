@@ -163,7 +163,7 @@ void* jconf_map_get(jMap* map, const char* key)
     unsigned int index;
     jNode *entry;
 
-    index = jconf_hash(key, jconf_strlen(key, NULL));
+    index = jconf_hash(key, jconf_strlen(key));
     entry = map->buckets[index];
 
     // Search the linked list.
@@ -192,7 +192,7 @@ void jconf_map_delete(jMap* map, jNode* node, const char* key)
     jNode *entry, *temp;
     int index;
 
-    index = jconf_hash(key, jconf_strlen(key, NULL));
+    index = jconf_hash(key, jconf_strlen(key));
     entry = map->buckets[index];
 
     temp = NULL;

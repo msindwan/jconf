@@ -53,7 +53,7 @@ static void jconf_parse_number(const char* buffer, jToken* token, int size, jArg
         EXP = 5,
         DECIMAL_DIGIT = 6;
 
-    int init_pos = args->pos, state = 0;
+    int init_pos = args->pos, state = 0, length;
     char c;
 
     token->type = JCONF_INT;
@@ -104,8 +104,14 @@ static void jconf_parse_number(const char* buffer, jToken* token, int size, jArg
 
     if (state == INIT || state == EXP) return;
 
+    length = args->pos - init_pos;
+    if (!jconf_alloc(&token->data, length + 1, args)) return;
+
+    // Copy the string into the destination.
+    jconf_strncpy(token->data, buffer + init_pos, length);
+    ((char*)token->data)[length] = 0;
     args->e = JCONF_NO_ERROR;
-    token->data = (char*)(buffer + init_pos);
+
     args->pos--;
 }
 
@@ -121,7 +127,7 @@ static void jconf_parse_number(const char* buffer, jToken* token, int size, jArg
  */
 static void jconf_parse_string(const char* buffer, char** dest, int size, jArgs* args)
 {
-    int j, init_pos;
+    int j, init_pos, length;
     char c;
 
     init_pos = args->pos + 1;
@@ -158,7 +164,12 @@ static void jconf_parse_string(const char* buffer, char** dest, int size, jArgs*
         args->e = JCONF_UNEXPECTED_TOK; return;
     }
 
-    *dest = (char*)(buffer + init_pos);
+    length = args->pos -init_pos;
+    if (!jconf_alloc((void**)dest, length + 1, args)) return;
+
+    // Copy the string into the destination.
+    jconf_strncpy(*dest, buffer + init_pos, length);
+    (*dest)[length] = 0;
     args->e = JCONF_NO_ERROR;
 }
 
