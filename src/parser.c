@@ -270,15 +270,16 @@ static int jconf_parse_json(jToken* tokens, const char* buffer, int size, jArgs*
             continue;
         }
 
+
         // Ignore comments from the JSON string.
         if (c == '/')
         {
             c = buffer[++args->pos];
             if (c == '*')
-            while (args->pos < size && buffer[++args->pos] == '*' && buffer[++args->pos] == '/');
+                while (args->pos < size && !(buffer[++args->pos] == '*' && buffer[++args->pos] == '/'));
 
             else if (c == '/')
-            while (args->pos < size && buffer[++args->pos] != '\n');
+                while (args->pos < size && buffer[++args->pos] != '\n');
 
             // If the end of the buffer is reached before an object is parsed, return an error.
             if (args->pos == size)
