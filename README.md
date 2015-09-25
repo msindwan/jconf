@@ -18,7 +18,9 @@
 * JConf is light weight, portable, and fast.
 * It is also easy to use and extensible.
 
-### Usage ###
+### Basic Usage ###
+
+* The following is an example of the basic use case:
 
     jToken *token, *value;
     char* szStr;
