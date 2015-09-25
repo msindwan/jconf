@@ -52,4 +52,4 @@ The following is an example of the basic use case:
 ### License ###
 
 * MIT License (see the source directory)
-* JConf uses the Limit Break font, created by Skyhaven Fonts http://www.dafont.com/profile.php?user=487781
+* The JConf logo uses Limit Break created by Skyhaven Fonts http://www.dafont.com/limit-break.font
