@@ -48,3 +48,8 @@ The following is an example of the basic use case:
     }
 
     jconf_free_token(token);
+
+### License ###
+
+* MIT License (see the source directory)
+* JConf uses the Limit Break font, created by Skyhaven Fonts http://www.dafont.com/profile.php?user=487781
