@@ -20,7 +20,7 @@
 
 ### Basic Usage ###
 
-* The following is an example of the basic use case:
+The following is an example of the basic use case:
 
     jToken *token, *value;
     char* szStr;
