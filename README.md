@@ -1,9 +1,10 @@
 # README #
 
+### JCONF V1.0 ###
+
 ### Summary ###
 
 * JConf is a simple feature-driven JSON parser for C/C++ applications. It is supported on Linux and Windows using gcc (tested with MinGW) or VC.
-* Latest Version : v1.0
 
 ### Installation ###
 
