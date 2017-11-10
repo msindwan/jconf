@@ -2,7 +2,7 @@ version: 2
 
 dependencies:
   pre:
-    - sudo apt-get update
+    -
     - sudo apt-get install gcc
     - sudo apt-get install make
 
@@ -12,6 +12,12 @@ jobs:
       - image: debian:stretch
     steps:
       - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt-get update
+            sudo apt-get --assume-yes install gcc
+            sudo apt-get --assume-yes install make
       - run:
           name: Test
           command: make test
