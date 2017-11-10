@@ -1,4 +1,4 @@
-# JCONF Unittest Makefile
+# JCONF Makefile
 # Author : Mayank Sindwani
 # Date : 2015-06-27
 
@@ -19,9 +19,10 @@ $(LIB_DIR)/$(LIB): $(OBJ)
 	$(AR) rcs $@ $^
 
 # Create the executable
-test: $(OBJ_TEST)
+test: clean $(OBJ_TEST)
 	@mkdir -p $(BIN_DIR)
 	$(CC) -o $(BIN_DIR)/$(EXEC) $(OBJ_TEST)
+	./bin/jconftest
 
 clean:
 	rm -rf $(OBJ_TEST) $(BIN_DIR)

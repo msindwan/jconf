@@ -1,27 +1,26 @@
-# README #
+# JCONF
 
-### Summary ###
+JConf is a simple feature-driven JSON parser for C/C++ applications. It is supported on Linux and Windows using gcc
+(tested with MinGW for Windows).
 
-* JConf is a simple feature-driven JSON parser for C/C++ applications.
-* It is supported on Linux and Windows using gcc (tested with MinGW for Windows) or VC respectively.
-
-### Installation ###
+## Build Instructions
 
 * Add the include directory from the root to your application.
-* If you are using gcc, run make from the root to build the static library. Otherwise, build the lib file.
+* Run make from the root to build the static library.
 * Link the newly built libjconf library.
 
-### Features and Advantages ###
+## Features and Advantages
 
-* JConf creates well-defined data structures with their own APIs for user convenience.
-* It does a single-pass for scanning and parsing simultaneously using DFAs and states.
-* JConf is light weight, portable, and fast.
-* It is also easy to use and extensible.
+* Includes well-defined data structures with their own APIs for user convenience.
+* Does a single-pass for scanning and parsing using DFAs and states.
+* Light-weight, portable, and fast.
+* Easy to use.
 
-### Basic Usage ###
+## Basic Usage
 
-The following is an example of the basic use case:
+The following is an example of a basic use case:
 
+``` C
     jToken *token, *value;
     char* szStr;
     jArgs args;
@@ -30,7 +29,7 @@ The following is an example of the basic use case:
     char* buffer = "{ \"Key\" : \"value\", \"Key2\" : 2, \"Key3\" : [3,4,5, {}] }";
 
     token = jconf_json2c(buffer, strlen(buffer), &args);
-    
+
     // Verify the type of the JSON object.
     if (token->type == JCONF_OBJECT)
     {
@@ -48,8 +47,8 @@ The following is an example of the basic use case:
     }
 
     jconf_free_token(token);
+```
 
-### License ###
+## License
 
-* MIT License (see the source directory)
-* The JConf logo uses Limit Break created by Skyhaven Fonts http://www.dafont.com/limit-break.font
+Licensed under the MIT License
