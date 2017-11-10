@@ -553,5 +553,5 @@ int main(int argc, char* argv[])
         printf("\n");
     }
 
-    return 0;
+    return TEST_JCONF_COUNT - passed_tests;
 }
