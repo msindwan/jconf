@@ -1,11 +1,5 @@
 version: 2
 
-dependencies:
-  pre:
-    -
-    - sudo apt-get install gcc
-    - sudo apt-get install make
-
 jobs:
   build:
     docker:
