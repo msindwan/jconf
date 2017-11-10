@@ -1,5 +1,7 @@
 # JCONF
 
+[![circleci](https://circleci.com/gh/msindwan/jconf.svg?style=shield&circle-token=:circle-token)](https://circleci.com/gh/msindwan/jconf)
+
 JConf is a simple feature-driven JSON parser for C/C++ applications. It is supported on Linux and Windows using gcc
 (tested with MinGW for Windows).
 
