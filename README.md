@@ -6,7 +6,7 @@ JConf is a simple feature-driven JSON parser for C/C++ applications. It is suppo
 ## Build Instructions
 
 * Add the include directory from the root to your application.
-* Run make from the root to build the static library.
+* Run `make` from the root to build the static library.
 * Link the newly built libjconf library.
 
 ## Features and Advantages
@@ -48,6 +48,10 @@ The following is an example of a basic use case:
 
     jconf_free_token(token);
 ```
+
+## Testing
+
+Run `make test`.
 
 ## License
 
