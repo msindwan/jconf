@@ -15,9 +15,9 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            sudo apt-get update
-            sudo apt-get --assume-yes install gcc
-            sudo apt-get --assume-yes install make
+            apt-get update
+            apt-get --assume-yes install gcc
+            apt-get --assume-yes install make
       - run:
           name: Test
           command: make test
