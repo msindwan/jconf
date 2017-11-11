@@ -2,14 +2,15 @@
 
 [![circleci](https://circleci.com/gh/msindwan/jconf.svg?style=shield&circle-token=:circle-token)](https://circleci.com/gh/msindwan/jconf)
 
-JConf is a simple feature-driven JSON parser for C/C++ applications. It is supported on Linux and Windows using gcc
-(tested with MinGW for Windows).
+JConf is a feature-driven JSON parser for C/C++ applications.
 
 ## Build Instructions
 
-* Add the include directory from the root to your application.
-* Run `make` from the root to build the static library.
-* Link the newly built libjconf library.
+JConf requires `Make` and `GCC` to compile the static library from source. To include JConf in your project:
+
+* Run `make` from the root directory to build the library.
+* Copy `lib/libjconf.a` and the `include` directory to your application.
+* Link the libjconf static library (e.g `gcc -I path/to/include/directory -L path/to/lib/directory -ljconf ...`)
 
 ## Features and Advantages
 
@@ -53,7 +54,7 @@ The following is an example of a basic use case:
 
 ## Testing
 
-Run `make test`.
+Run `make test` to run the test suite.
 
 ## License
 
